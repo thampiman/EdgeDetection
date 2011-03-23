@@ -1,0 +1,6 @@
+-z -q -c -m"./Debug/C6416_DSK_FIR_C_FIX.map" -o"./Debug/C6416_DSK_FIR_C_FIX.out" -w -x -i"c:/ti/c6000/bios/lib" -i"c:/ti/c6000/rtdx/lib" -i"c:/ti/c6000/xdais/lib" -i"c:/ti/C6000/dsk6416/lib" -i"c:/ti/c6000/cgtools/lib"
+"h:\c6000 cd rom 2004\dsp code for dsk6416\chapter 14 - finite impulse response filters\fir_c_fixed\Debug\C6416_DSK_FIRcfg.obj"
+"h:\c6000 cd rom 2004\dsp code for dsk6416\chapter 14 - finite impulse response filters\fir_c_fixed\Debug\C6416_DSK_FIRcfg_c.obj"
+"h:\c6000 cd rom 2004\dsp code for dsk6416\chapter 14 - finite impulse response filters\fir_c_fixed\Debug\FIR.obj"
+"C:\ti\c6000\dsk6416\lib\dsk6416bsl.lib"
+"H:\C6000 CD ROM 2004\DSP Code for DSK6416\Chapter 14 - Finite Impulse Response Filters\Fir_C_Fixed\C6416_DSK_FIRcfg.cmd"

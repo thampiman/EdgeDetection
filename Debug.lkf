@@ -1,0 +1,7 @@
+-z -q -c -m"./Debug/C6416_DSK_FIR_C_FIX.map" -o"./Debug/C6416_DSK_FIR_C_FIX.out" -w -x -i"C:/CCStudio_v3.1/C6000/rtdx/lib" -i"C:/CCStudio_v3.1/C6000/csl/lib" -i"C:/CCStudio_v3.1/C6000/xdais/lib" -i"C:/CCStudio_v3.1/C6000/bios/lib" -i"C:/CCStudio_v3.1/C6000/cgtools_530/lib"
+"P:\courses\naim\2010-11\MSc 2\Edge detection_CCS\My_lnk_cmd.cmd"
+"P:\courses\naim\2010-11\MSc 2\Edge detection_CCS\C6416_DSK_FIRcfg.cmd"
+"P:\courses\naim\2010-11\MSc 2\Edge detection_CCS\Debug\C6416_DSK_FIRcfg.obj"
+"P:\courses\naim\2010-11\MSc 2\Edge detection_CCS\Debug\C6416_DSK_FIRcfg_c.obj"
+"P:\courses\naim\2010-11\MSc 2\Edge detection_CCS\Debug\FIR.obj"
+"P:\courses\naim\2010-11\MSc 2\Edge detection_CCS\dsk6416bsl.lib"

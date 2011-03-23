@@ -1,0 +1,51 @@
+; Code Composer Project File, Version 2.0 (do not modify or remove this line)
+
+[Project Settings]
+ProjectDir="P:\courses\naim\2010-11\MSc 2\Edge detection_CCS\"
+ProjectType=Executable
+CPUFamily=TMS320C64XX
+Tool="Compiler"
+Tool="CustomBuilder"
+Tool="DspBiosBuilder"
+Tool="Linker"
+Config="Debug"
+Config="Release"
+
+[Source Files]
+Source="C6416_DSK_FIR.cdb"
+Source="dsk6416bsl.lib"
+Source="FIR.c"
+Source="My_lnk_cmd.cmd"
+
+[Generated Files]
+Source="C6416_DSK_FIRcfg.cmd"
+Source="C6416_DSK_FIRcfg.s62"
+Source="C6416_DSK_FIRcfg_c.c"
+
+["Compiler" Settings: "Debug"]
+Options=-g -q -fr"P:\courses\naim\2010-11\MSc 2\Edge detection_CCS\Debug" -d"_DEBUG" -mv6400
+
+["Compiler" Settings: "Release"]
+Options=-q -o3 -fr"P:\courses\naim\2010-11\MSc 2\Edge detection_CCS\Release" -mv6400
+
+["DspBiosBuilder" Settings: "Debug"]
+Options=-v6x
+
+["DspBiosBuilder" Settings: "Release"]
+Options=-v6x
+
+["Linker" Settings: "Debug"]
+Options=-q -c -m".\Debug\C6416_DSK_FIR_C_FIX.map" -o".\Debug\C6416_DSK_FIR_C_FIX.out" -w -x
+
+["Linker" Settings: "Release"]
+Options=-q -c -m".\Release\C6416_DSK_FIR_C_FIX.map" -o".\Release\C6416_DSK_FIR_C_FIX.out" -w -x
+
+["FIR.c" Settings: "Release"]
+Options="Compiler" +{-o1} -{-o3}
+
+["My_lnk_cmd.cmd" Settings: "Debug"]
+LinkOrder=1
+
+["My_lnk_cmd.cmd" Settings: "Release"]
+LinkOrder=1
+
