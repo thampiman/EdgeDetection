@@ -13,6 +13,11 @@
 extern unsigned char frame_1[HEIGHTY*WIDTHX];
 unsigned char gradient[HEIGHTY*WIDTHX];
 unsigned char edgemap[HEIGHTY*WIDTHX];
+const int th = 45; // constant threshold fot edge map
+clock_t start, stop, overhead; // variables for profiling
+
+void init_array();	// function to initialise arrays
+void edge_detection_c(); // function for edge detection in C
 
 /* Codec configuration settings */
 DSK6416_AIC23_Config config = { \
@@ -30,12 +35,6 @@ DSK6416_AIC23_Config config = { \
 
 void main()
 {
-	int th=45; // set the theshold for generating the edge map
-	int i,y_index,x_index;
-	int gradientX=0;
-	int gradientY=0;
-	clock_t start, stop, overhead; // variables for profiling
-
 	 /* Initialize the board support library, must be called first */
     DSK6416_init();
 
@@ -44,16 +43,35 @@ void main()
 	stop = clock();
 	overhead = stop-start;
 
+	// Initialise array
 	start = clock();
+	init_array();
+	stop = clock();
+	LOG_printf(&mylog, "Initialisation cycles: %d", stop-start-overhead);
+
+	// Edge detection in C
+	start = clock();
+	edge_detection_c();
+	stop = clock();
+	LOG_printf(&mylog, "Edge detection cycles: %d", stop-start-overhead);
+}
+
+void init_array()
+{
+	int i;
 	for (i=0;i<HEIGHTY*WIDTHX;i++) //initialise arrays
 	{
 		gradient[i]=0;
 		edgemap[i]=0;
 	}
-	stop = clock();
-	LOG_printf(&mylog, "Initialisation cycles: %d", stop-start-overhead);
+}
 
-	start = clock();
+void edge_detection_c()
+{
+	int y_index,x_index;
+	int gradientX=0;
+	int gradientY=0;
+
 	for(y_index = 0; y_index < HEIGHTY; y_index++)
 	{	
 		for(x_index = 0; x_index < WIDTHX; x_index++)
@@ -67,6 +85,4 @@ void main()
 			}
 		}
 	}
-	stop = clock();
-	LOG_printf(&mylog, "Edge detection cycles: %d", stop-start-overhead);
 }
