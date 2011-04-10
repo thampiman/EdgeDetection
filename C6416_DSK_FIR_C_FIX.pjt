@@ -1,7 +1,7 @@
 ; Code Composer Project File, Version 2.0 (do not modify or remove this line)
 
 [Project Settings]
-ProjectDir="P:\courses\naim\2010-11\MSc 2\Edge detection_CCS\"
+ProjectDir="D:\Documents and Settings\Hari\Ajay\EdgeDetection\"
 ProjectType=Executable
 CPUFamily=TMS320C64XX
 Tool="Compiler"
@@ -23,10 +23,10 @@ Source="C6416_DSK_FIRcfg.s62"
 Source="C6416_DSK_FIRcfg_c.c"
 
 ["Compiler" Settings: "Debug"]
-Options=-g -q -fr"P:\courses\naim\2010-11\MSc 2\Edge detection_CCS\Debug" -d"_DEBUG" -mv6400
+Options=-g -q -fr"D:\Documents and Settings\Hari\Ajay\EdgeDetection\Debug" -d"_DEBUG" -mv6400
 
 ["Compiler" Settings: "Release"]
-Options=-q -o3 -fr"P:\courses\naim\2010-11\MSc 2\Edge detection_CCS\Release" -mv6400
+Options=-q -o3 -fr"D:\Documents and Settings\Hari\Ajay\EdgeDetection\Release" -mv6400
 
 ["DspBiosBuilder" Settings: "Debug"]
 Options=-v6x
