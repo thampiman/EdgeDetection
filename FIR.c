@@ -67,14 +67,28 @@ void init_array()
 
 void edge_detection_c()
 {
-	int y_index,x_index;
+	//int y_index,x_index;
+	int xy_index;
 	int gradientX=0;
 	int gradientY=0;
 
-	for(y_index = 0; y_index < HEIGHTY; y_index++)
+	for (xy_index = 0; xy_index < HEIGHTY * WIDTHX; xy_index++)
+	{
+		gradientX = abs(frame_1[xy_index+1]-frame_1[xy_index-1]);
+		gradientY = abs(frame_1[xy_index+WIDTHX]-frame_1[xy_index-WIDTHX]);
+		gradient[xy_index]=sqrt(gradientX*gradientX+gradientY*gradientY);
+		if (gradient[xy_index]>th)
+		{
+			edgemap[xy_index]=255;
+		}
+	}
+
+	/*for(y_index = 0; y_index < HEIGHTY; y_index++)
 	{	
 		for(x_index = 0; x_index < WIDTHX; x_index++)
 		{
+			test = x_index+(y_index-1)*WIDTHX;
+			value = frame_1[x_index+(y_index-1)*WIDTHX];
 			gradientX=abs(frame_1[x_index+y_index*WIDTHX+1]-frame_1[x_index+y_index*WIDTHX-1]);
 			gradientY=abs(frame_1[x_index+(y_index+1)*WIDTHX]-frame_1[x_index+(y_index-1)*WIDTHX]);
 			gradient[x_index+y_index*WIDTHX]=sqrt(gradientX*gradientX+gradientY*gradientY);
@@ -85,5 +99,5 @@ void edge_detection_c()
 			// Following line made the code slower (approx 100,000 cycles)
             //edgemap[x_index+y_index*WIDTHX] = (gradient[x_index+y_index*WIDTHX]>th) ? 255 : 0;
 		}
-	}
+	}*/
 }
