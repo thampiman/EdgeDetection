@@ -2,6 +2,7 @@
 #include "C6416_DSK_FIRcfg.h"
 #include "images.h"
 #include <math.h>
+#include <time.h>
 #include "std.h"
 #define CHIP_6416 1
 #define HEIGHTY 288
@@ -13,7 +14,6 @@ extern unsigned char frame_1[HEIGHTY*WIDTHX];
 unsigned char gradient[HEIGHTY*WIDTHX];
 unsigned char edgemap[HEIGHTY*WIDTHX];
 
- 
 /* Codec configuration settings */
 DSK6416_AIC23_Config config = { \
     0x0017,  /* 0 DSK6416_AIC23_LEFTINVOL  Left line input channel volume */ \
@@ -28,29 +28,32 @@ DSK6416_AIC23_Config config = { \
     0x0001   /* 9 DSK6416_AIC23_DIGACT     Digital interface activation */   \
 };
 
- 
-
-
-
-
-
-
-
 void main()
 {
 	int th=45; // set the theshold for generating the edge map
 	int i,y_index,x_index;
 	int gradientX=0;
 	int gradientY=0;
+	clock_t start, stop, overhead; // variables for profiling
+
 	 /* Initialize the board support library, must be called first */
     DSK6416_init();
 
+	// First get the overhead before profiling code
+	start = clock();
+	stop = clock();
+	overhead = stop-start;
+
+	start = clock();
 	for (i=0;i<HEIGHTY*WIDTHX;i++) //initialise arrays
 	{
 		gradient[i]=0;
 		edgemap[i]=0;
 	}
+	stop = clock();
+	LOG_printf(&mylog, "Initialisation cycles: %d", stop-start-overhead);
 
+	start = clock();
 	for(y_index = 0; y_index < HEIGHTY; y_index++)
 	{	
 		for(x_index = 0; x_index < WIDTHX; x_index++)
@@ -64,5 +67,6 @@ void main()
 			}
 		}
 	}
-	    
+	stop = clock();
+	LOG_printf(&mylog, "Edge detection cycles: %d", stop-start-overhead);
 }
