@@ -3,20 +3,26 @@
 #include <math.h>
 #include <time.h>
 #include "std.h"
+
 #define CHIP_6416 1
 #define HEIGHTY 288
 #define WIDTHX 352
+#define HEIGHTINTY 144 // 288 by 2
+#define WIDTHINTX 176 // 352 by 2
+
 #include "dsk6416.h"
 #include "dsk6416_aic23.h"
 #pragma DATA_SECTION (frame_1,"ext_sdram")
+
 extern unsigned char frame_1[HEIGHTY*WIDTHX];
 unsigned char gradient[HEIGHTY*WIDTHX];
 unsigned char edgemap[HEIGHTY*WIDTHX];
+
 const int th = 45; // constant threshold fot edge map
 clock_t start, stop, overhead; // variables for profiling
 
 void init_array();	// function to initialise arrays
-void edge_detection_c(); // function for edge detection in C
+void edge_detection_c(const unsigned char *pFrame_1, unsigned char *pEdgemap); // function for edge detection in C
 
 /* Codec configuration settings */
 DSK6416_AIC23_Config config = { \
@@ -50,7 +56,7 @@ void main()
 
 	// Edge detection in C
 	start = clock();
-	edge_detection_c();
+	edge_detection_c(frame_1, edgemap);
 	stop = clock();
 	LOG_printf(&mylog, "Edge detection cycles: %d", stop-start-overhead);
 }
@@ -65,39 +71,54 @@ void init_array()
 	}
 }
 
-void edge_detection_c()
+void edge_detection_c(const unsigned char *pFrame_1, unsigned char *pEdgemap)
 {
-	//int y_index,x_index;
-	int xy_index;
-	int gradientX=0;
-	int gradientY=0;
+	int y_index,x_index;
+	unsigned int gradientX=0;
+	unsigned int gradientY=0;
+	unsigned int gradient=0;
+	unsigned int gradient_ext=0;
 
-	for (xy_index = 0; xy_index < HEIGHTY * WIDTHX; xy_index++)
-	{
-		gradientX = abs(frame_1[xy_index+1]-frame_1[xy_index-1]);
-		gradientY = abs(frame_1[xy_index+WIDTHX]-frame_1[xy_index-WIDTHX]);
-		gradient[xy_index]=sqrt(gradientX*gradientX+gradientY*gradientY);
-		if (gradient[xy_index]>th)
+	const unsigned int *i_frame_1 = (const unsigned int *)pFrame_1;
+	int *i_edgemap = (int *) pEdgemap;
+
+	for(y_index = 0; y_index < HEIGHTINTY; y_index++)
+	{	
+		for(x_index = 0; x_index < WIDTHINTX; x_index++)
 		{
-			edgemap[xy_index]=255;
+			gradientX=_subabs4(i_frame_1[x_index+y_index*WIDTHINTX+1], i_frame_1[x_index+y_index*WIDTHINTX-1]);
+			gradientY=_subabs4(i_frame_1[x_index+(y_index+1)*WIDTHINTX], i_frame_1[x_index+(y_index-1)*WIDTHINTX]);
+
+			// Approximating sqrt(X^2 + Y^2) to (X+Y)
+			gradient = _add4(gradientX, gradientY);
+			
+			// Extract 1st 8 MSBs
+			gradient_ext = _ext(gradient, 0, 24) & 0x000000FF;
+			if (gradient_ext > th)
+			{
+				i_edgemap[x_index+y_index*WIDTHINTX]+=(0xFF<<24);
+			}
+			
+			// Extract 2nd 8 MSBs
+			gradient_ext = _ext(gradient, 8, 24) & 0x000000FF;
+			if (gradient_ext > th)
+			{
+				i_edgemap[x_index+y_index*WIDTHINTX]+=(0xFF<<16);
+			}
+			
+			// Extract 3rd 8 MSBs
+			gradient_ext = _ext(gradient, 16, 24) & 0x000000FF;
+			if (gradient_ext > th)
+			{
+				i_edgemap[x_index+y_index*WIDTHINTX]+=(0xFF<<8);
+			}
+			
+			// Extract 1st 8 LSBs
+			gradient_ext = _ext(gradient, 24, 24) & 0x000000FF;
+			if (gradient_ext > th)
+			{
+				i_edgemap[x_index+y_index*WIDTHINTX]+=0xFF;
+			}
 		}
 	}
-
-	/*for(y_index = 0; y_index < HEIGHTY; y_index++)
-	{	
-		for(x_index = 0; x_index < WIDTHX; x_index++)
-		{
-			test = x_index+(y_index-1)*WIDTHX;
-			value = frame_1[x_index+(y_index-1)*WIDTHX];
-			gradientX=abs(frame_1[x_index+y_index*WIDTHX+1]-frame_1[x_index+y_index*WIDTHX-1]);
-			gradientY=abs(frame_1[x_index+(y_index+1)*WIDTHX]-frame_1[x_index+(y_index-1)*WIDTHX]);
-			gradient[x_index+y_index*WIDTHX]=sqrt(gradientX*gradientX+gradientY*gradientY);
-			if (gradient[x_index+y_index*WIDTHX]>th)
-			{
-				edgemap[x_index+y_index*WIDTHX]=255;
-			}
-			// Following line made the code slower (approx 100,000 cycles)
-            //edgemap[x_index+y_index*WIDTHX] = (gradient[x_index+y_index*WIDTHX]>th) ? 255 : 0;
-		}
-	}*/
 }
