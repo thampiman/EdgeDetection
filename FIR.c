@@ -7,6 +7,9 @@
 #define CHIP_6416 1
 #define HEIGHTY 288
 #define WIDTHX 352
+#define TOTAL 101376 // Total when char is used
+#define TOTALINT 25344 // 101376 by 4
+#define TOTALDOUBLE 12672 // 101376 by 8
 #define HEIGHTINTY 144 // 288 by 2
 #define WIDTHINTX 176 // 352 by 2
 
@@ -64,10 +67,12 @@ void main()
 void init_array()
 {
 	int i;
-	for (i=0;i<HEIGHTY*WIDTHX;i++) //initialise arrays
+	double *d_gradient = (double *) gradient;
+	double *d_edgemap = (double *) edgemap;
+	for (i=0;i<TOTALDOUBLE;i++) //initialise arrays
 	{
-		gradient[i]=0;
-		edgemap[i]=0;
+		d_gradient[i]=0;
+		d_edgemap[i]=0;
 	}
 }
 
@@ -76,7 +81,7 @@ void edge_detection_c(const unsigned char *pFrame_1, unsigned char *pEdgemap)
 	int y_index,x_index;
 	unsigned int gradientX=0;
 	unsigned int gradientY=0;
-	unsigned int gradient=0;
+	unsigned int gradient_int=0;
 	unsigned int gradient_ext=0;
 
 	const unsigned int *i_frame_1 = (const unsigned int *)pFrame_1;
@@ -90,31 +95,31 @@ void edge_detection_c(const unsigned char *pFrame_1, unsigned char *pEdgemap)
 			gradientY=_subabs4(i_frame_1[x_index+(y_index+1)*WIDTHINTX], i_frame_1[x_index+(y_index-1)*WIDTHINTX]);
 
 			// Approximating sqrt(X^2 + Y^2) to (X+Y)
-			gradient = _add4(gradientX, gradientY);
+			gradient_int = _add4(gradientX, gradientY);
 			
 			// Extract 1st 8 MSBs
-			gradient_ext = _ext(gradient, 0, 24) & 0x000000FF;
+			gradient_ext = _ext(gradient_int, 0, 24) & 0x000000FF;
 			if (gradient_ext > th)
 			{
 				i_edgemap[x_index+y_index*WIDTHINTX]+=(0xFF<<24);
 			}
 			
 			// Extract 2nd 8 MSBs
-			gradient_ext = _ext(gradient, 8, 24) & 0x000000FF;
+			gradient_ext = _ext(gradient_int, 8, 24) & 0x000000FF;
 			if (gradient_ext > th)
 			{
 				i_edgemap[x_index+y_index*WIDTHINTX]+=(0xFF<<16);
 			}
 			
 			// Extract 3rd 8 MSBs
-			gradient_ext = _ext(gradient, 16, 24) & 0x000000FF;
+			gradient_ext = _ext(gradient_int, 16, 24) & 0x000000FF;
 			if (gradient_ext > th)
 			{
 				i_edgemap[x_index+y_index*WIDTHINTX]+=(0xFF<<8);
 			}
 			
 			// Extract 1st 8 LSBs
-			gradient_ext = _ext(gradient, 24, 24) & 0x000000FF;
+			gradient_ext = _ext(gradient_int, 24, 24) & 0x000000FF;
 			if (gradient_ext > th)
 			{
 				i_edgemap[x_index+y_index*WIDTHINTX]+=0xFF;
