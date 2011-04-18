@@ -22,6 +22,7 @@ unsigned char gradient[HEIGHTY*WIDTHX];
 unsigned char edgemap[HEIGHTY*WIDTHX];
 
 const int th = 45; // constant threshold fot edge map
+const int th_quad = 0x5A5A5A5A; // contains threshold (90) in 4 packed 8 bits
 clock_t start, stop, overhead; // variables for profiling
 
 void init_array();	// function to initialise arrays
@@ -82,7 +83,7 @@ void edge_detection_c(const unsigned char *pFrame_1, unsigned char *pEdgemap)
 	unsigned int gradientX=0;
 	unsigned int gradientY=0;
 	unsigned int gradient_int=0;
-	unsigned int gradient_ext=0;
+	unsigned int comparison;
 
 	const unsigned int *i_frame_1 = (const unsigned int *)pFrame_1;
 	int *i_edgemap = (int *) pEdgemap;
@@ -96,34 +97,12 @@ void edge_detection_c(const unsigned char *pFrame_1, unsigned char *pEdgemap)
 
 			// Approximating sqrt(X^2 + Y^2) to (X+Y)
 			gradient_int = _add4(gradientX, gradientY);
-			
-			// Extract 1st 8 MSBs
-			gradient_ext = _ext(gradient_int, 0, 24) & 0x000000FF;
-			if (gradient_ext > th)
-			{
-				i_edgemap[x_index+y_index*WIDTHINTX]+=(0xFF<<24);
-			}
-			
-			// Extract 2nd 8 MSBs
-			gradient_ext = _ext(gradient_int, 8, 24) & 0x000000FF;
-			if (gradient_ext > th)
-			{
-				i_edgemap[x_index+y_index*WIDTHINTX]+=(0xFF<<16);
-			}
-			
-			// Extract 3rd 8 MSBs
-			gradient_ext = _ext(gradient_int, 16, 24) & 0x000000FF;
-			if (gradient_ext > th)
-			{
-				i_edgemap[x_index+y_index*WIDTHINTX]+=(0xFF<<8);
-			}
-			
-			// Extract 1st 8 LSBs
-			gradient_ext = _ext(gradient_int, 24, 24) & 0x000000FF;
-			if (gradient_ext > th)
-			{
-				i_edgemap[x_index+y_index*WIDTHINTX]+=0xFF;
-			}
+
+			// Compare gradient_int with quad packed threshold
+			comparison = _cmpgtu4(gradient_int, th_quad);
+
+			// expand output and find logical-and with 0xFFFFFFFF
+			i_edgemap[x_index+y_index*WIDTHINTX]=(_xpnd4(comparison)&0xFFFFFFFF);
 		}
 	}
 }
