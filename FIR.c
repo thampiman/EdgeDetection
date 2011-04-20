@@ -115,3 +115,4 @@ void edge_detection_c(const unsigned char *pFrame_1, unsigned char *pEdgemap)
 		}
 	}
 }
+
