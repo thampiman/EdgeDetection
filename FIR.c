@@ -70,6 +70,11 @@ void init_array()
 	int i;
 	double *d_gradient = (double *) gradient;
 	double *d_edgemap = (double *) edgemap;
+
+	// nassert that the total number of elements in d_gradient and d_edgemap = TOTALDOUBLE
+	_nassert((int)(d_gradient)%TOTALDOUBLE == 0);
+	_nassert((int)(d_edgemap)%TOTALDOUBLE == 0);
+
 	for (i=0;i<TOTALDOUBLE;i++) //initialise arrays
 	{
 		d_gradient[i]=0;
@@ -87,6 +92,10 @@ void edge_detection_c(const unsigned char *pFrame_1, unsigned char *pEdgemap)
 
 	const unsigned int *i_frame_1 = (const unsigned int *)pFrame_1;
 	int *i_edgemap = (int *) pEdgemap;
+
+	// nassert that the total number of elements in i_frame_1 and i_edgemap = TOTALINT
+	_nassert((int)(i_frame_1)%TOTALINT == 0);
+	_nassert((int)(i_edgemap)%TOTALINT == 0);
 
 	for(y_index = 0; y_index < HEIGHTINTY; y_index++)
 	{	
