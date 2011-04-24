@@ -27,6 +27,7 @@ clock_t start, stop, overhead; // variables for profiling
 
 void init_array();	// function to initialise arrays
 void edge_detection_c(const unsigned char *pFrame_1, unsigned char *pEdgemap); // function for edge detection in C
+void edge_detection_la(const unsigned char *pFrame_1, unsigned char *pEdgemap, int widthintx, int heightinty, int totalint, int threshold); // function for edge detection in Linear Assembly
 
 /* Codec configuration settings */
 DSK6416_AIC23_Config config = { \
@@ -52,7 +53,7 @@ void main()
 	stop = clock();
 	overhead = stop-start;
 
-	// Initialise array
+	// Initialise arrays
 	start = clock();
 	init_array();
 	stop = clock();
@@ -62,7 +63,19 @@ void main()
 	start = clock();
 	edge_detection_c(frame_1, edgemap);
 	stop = clock();
-	LOG_printf(&mylog, "Edge detection cycles: %d", stop-start-overhead);
+	LOG_printf(&mylog, "Edge detection (C) cycles: %d", stop-start-overhead);
+
+	// Reset arrays
+	start = clock();
+	init_array();
+	stop = clock();
+	LOG_printf(&mylog, "Initialisation cycles: %d", stop-start-overhead);
+
+	// Edge detection in Linear Assembly
+	start = clock();
+	edge_detection_la(frame_1, edgemap, 176, 144, 25344, 0x5A5A5A5A);
+	stop = clock();
+	LOG_printf(&mylog, "Edge detection (LA) cycles: %d", stop-start-overhead);
 }
 
 void init_array()
@@ -110,8 +123,8 @@ void edge_detection_c(const unsigned char *pFrame_1, unsigned char *pEdgemap)
 			// Compare gradient_int with quad packed threshold
 			comparison = _cmpgtu4(gradient_int, th_quad);
 
-			// expand output and find logical-and with 0xFFFFFFFF
-			i_edgemap[x_index+y_index*WIDTHINTX]=(_xpnd4(comparison)&0xFFFFFFFF);
+			// Expand output to get the edges
+			i_edgemap[x_index+y_index*WIDTHINTX]=_xpnd4(comparison);
 		}
 	}
 }

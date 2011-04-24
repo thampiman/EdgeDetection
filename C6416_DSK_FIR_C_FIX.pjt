@@ -23,7 +23,7 @@ Source="C6416_DSK_FIRcfg.s62"
 Source="C6416_DSK_FIRcfg_c.c"
 
 ["Compiler" Settings: "Debug"]
-Options=-g -q -fr"D:\Documents and Settings\Hari\Ajay\EdgeDetection\Debug" -d"_DEBUG" -mv6400
+Options=-g -q -pm -o3 -fr"D:\Documents and Settings\Hari\Ajay\EdgeDetection\Debug" -d"_DEBUG" -mv6400
 
 ["Compiler" Settings: "Release"]
 Options=-q -o3 -fr"D:\Documents and Settings\Hari\Ajay\EdgeDetection\Release" -mv6400

@@ -1,0 +1,28 @@
+	.global _edge_detection_la
+
+
+_edge_detection_la .cproc pFrame_1, pEdgemap, widthintx, heightinty, totalint, threshold
+				   .reg xy_index, index_one, index_two, index_three, index_four, x_plus_one, x_minus_one, y_plus_one, y_minus_one, gradientX, gradientY, gradient_int, comparison, edges
+
+				ZERO xy_index
+
+loop			ADD xy_index, 1, index_one
+				SUB xy_index, 1, index_two
+				ADD xy_index, widthintx, index_three
+				SUB xy_index, widthintx, index_four
+				LDW	*pFrame_1[index_one], x_plus_one
+				LDW *pFrame_1[index_two], x_minus_one
+				LDW *pFrame_1[index_three], y_plus_one
+				LDW *pFrame_1[index_four], y_minus_one
+				SUBABS4 x_plus_one, x_minus_one, gradientX
+				SUBABS4 y_plus_one, y_minus_one, gradientY
+				ADD4 gradientX, gradientY, gradient_int
+				CMPGTU4 gradient_int, threshold, comparison
+				XPND4 comparison, edges
+				STW edges, *pEdgemap[xy_index]
+	[totalint] 	ADD xy_index, 1, xy_index
+	[totalint] 	SUB totalint, 1, totalint
+	[totalint] 	B loop
+		
+		.return
+		.endproc
