@@ -29,8 +29,8 @@ clock_t start, stop, overhead; // variables for profiling
 
 void init_array();	// function to initialise arrays
 void edge_detection_c(const unsigned char *pFrame_1, unsigned char *pEdgemap); // function for edge detection in C
-void edge_detection_la(const unsigned char *pFrame_1, unsigned char *pEdgemap, 
-				       int count, const int widthx, const int threshold); // function for edge detection in Linear Assembly
+void edge_detection_la(const unsigned char *pFrame_1, volatile unsigned char *pEdgemap, 
+				       volatile int count, const int widthx, const int threshold); // function for edge detection in Linear Assembly
 
 /* Codec configuration settings */
 DSK6416_AIC23_Config config = { \
