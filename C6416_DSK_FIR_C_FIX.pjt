@@ -14,6 +14,7 @@ Config="Release"
 [Source Files]
 Source="C6416_DSK_FIR.cdb"
 Source="dsk6416bsl.lib"
+Source="edge_detection_la.sa"
 Source="FIR.c"
 Source="My_lnk_cmd.cmd"
 

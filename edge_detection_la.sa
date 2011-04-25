@@ -1,28 +1,34 @@
 	.global _edge_detection_la
 
 
-_edge_detection_la .cproc pFrame_1, pEdgemap, widthintx, heightinty, totalint, threshold
-				   .reg xy_index, index_one, index_two, index_three, index_four, x_plus_one, x_minus_one, y_plus_one, y_minus_one, gradientX, gradientY, gradient_int, comparison, edges
+_edge_detection_la .cproc pFrame_1, pEdgemap, count, widthx, threshold
+				   .reg index_x_plus, index_x_minus, index_y_plus, index_y_minus
+				   .reg x_plus_1:x_plus_0, x_minus_1:x_minus_0
+				   .reg y_plus_1:y_plus_0, y_minus_1:y_minus_0
+				   .reg gradientX_1, gradientX_0, gradientY_1, gradientY_0
+				   .reg gradient_int_1, gradient_int_0
+				   .reg comparison_1, comparison_0, edge_1, edge_0
 
-				ZERO xy_index
-
-loop			ADD xy_index, 1, index_one
-				SUB xy_index, 1, index_two
-				ADD xy_index, widthintx, index_three
-				SUB xy_index, widthintx, index_four
-				LDW	*pFrame_1[index_one], x_plus_one
-				LDW *pFrame_1[index_two], x_minus_one
-				LDW *pFrame_1[index_three], y_plus_one
-				LDW *pFrame_1[index_four], y_minus_one
-				SUBABS4 x_plus_one, x_minus_one, gradientX
-				SUBABS4 y_plus_one, y_minus_one, gradientY
-				ADD4 gradientX, gradientY, gradient_int
-				CMPGTU4 gradient_int, threshold, comparison
-				XPND4 comparison, edges
-				STW edges, *pEdgemap[xy_index]
-	[totalint] 	ADD xy_index, 1, xy_index
-	[totalint] 	SUB totalint, 1, totalint
-	[totalint] 	B loop
+loop:			ADD count, 1, index_x_plus
+				SUB count, 1, index_x_minus
+				ADD count, widthx, index_y_plus
+				SUB count, widthx, index_y_minus
+				LDDW  *pFrame_1[index_x_plus], x_plus_1:x_plus_0
+				LDDW  *pFrame_1[index_x_minus], x_minus_1:x_minus_0
+				LDDW  *pFrame_1[index_y_plus], y_plus_1:y_plus_0
+				LDDW  *pFrame_1[index_y_minus], y_minus_1:y_minus_0
+				SUBABS4 x_plus_1, x_minus_1, gradientX_1
+				SUBABS4 x_plus_0, x_minus_0, gradientX_0
+				SUBABS4 y_plus_1, y_minus_1, gradientY_1
+				SUBABS4 y_plus_0, y_minus_0, gradientY_0
+				ADD4 gradientX_1, gradientY_1, gradient_int_1
+				ADD4 gradientX_0, gradientY_0, gradient_int_0
+				CMPGTU4 gradient_int_1, threshold, comparison_1
+				CMPGTU4 gradient_int_0, threshold, comparison_0
+				XPND4 comparison_1, edge_1
+				XPND4 comparison_0, edge_0
+				STDW edge_1:edge_0, *pEdgemap[count]
+	[count] 	SUB count, 1, count
+	[count] 	B loop
 		
-		.return
 		.endproc

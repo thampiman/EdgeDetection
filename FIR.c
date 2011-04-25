@@ -12,6 +12,8 @@
 #define TOTALDOUBLE 12672 // 101376 by 8
 #define HEIGHTINTY 144 // 288 by 2
 #define WIDTHINTX 176 // 352 by 2
+#define HEIGHTDOUBLEY 72 // 288 by 4
+#define WIDTHDOUBLEX 88 // 352 by 4
 
 #include "dsk6416.h"
 #include "dsk6416_aic23.h"
@@ -27,7 +29,8 @@ clock_t start, stop, overhead; // variables for profiling
 
 void init_array();	// function to initialise arrays
 void edge_detection_c(const unsigned char *pFrame_1, unsigned char *pEdgemap); // function for edge detection in C
-void edge_detection_la(const unsigned char *pFrame_1, unsigned char *pEdgemap, int widthintx, int heightinty, int totalint, int threshold); // function for edge detection in Linear Assembly
+void edge_detection_la(const unsigned char *pFrame_1, unsigned char *pEdgemap, 
+				       int count, const int widthx, const int threshold); // function for edge detection in Linear Assembly
 
 /* Codec configuration settings */
 DSK6416_AIC23_Config config = { \
@@ -73,7 +76,7 @@ void main()
 
 	// Edge detection in Linear Assembly
 	start = clock();
-	edge_detection_la(frame_1, edgemap, 176, 144, 25344, 0x5A5A5A5A);
+	edge_detection_la(frame_1, edgemap, TOTALDOUBLE, WIDTHDOUBLEX, th_quad);
 	stop = clock();
 	LOG_printf(&mylog, "Edge detection (LA) cycles: %d", stop-start-overhead);
 }
