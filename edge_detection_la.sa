@@ -1,34 +1,26 @@
 	.global _edge_detection_la
 
 
-_edge_detection_la .cproc pFrame_1, pEdgemap, count, widthx, threshold
-				   .reg index_x_plus, index_x_minus, index_y_plus, index_y_minus
-				   .reg x_plus_1:x_plus_0, x_minus_1:x_minus_0
-				   .reg y_plus_1:y_plus_0, y_minus_1:y_minus_0
-				   .reg gradientX_1, gradientX_0, gradientY_1, gradientY_0
-				   .reg gradient_int_1, gradient_int_0
-				   .reg comparison_1, comparison_0, edge_1, edge_0
+_edge_detection_la .cproc pFrame_x_prev, pFrame_x_next, pFrame_y_prev, pFrame_y_next, pEdgemap, threshold, count
+			 	MV   	.S1 	A10, A1 	     ; move count (arg 7) from A10 to A1
+				MV 		.S2X	A8, B1 		     ; move pEdgemap (arg 5) from A8 to B1
 
-loop:			ADD count, 1, index_x_plus
-				SUB count, 1, index_x_minus
-				ADD count, widthx, index_y_plus
-				SUB count, widthx, index_y_minus
-				LDDW  *pFrame_1[index_x_plus], x_plus_1:x_plus_0
-				LDDW  *pFrame_1[index_x_minus], x_minus_1:x_minus_0
-				LDDW  *pFrame_1[index_y_plus], y_plus_1:y_plus_0
-				LDDW  *pFrame_1[index_y_minus], y_minus_1:y_minus_0
-				SUBABS4 x_plus_1, x_minus_1, gradientX_1
-				SUBABS4 x_plus_0, x_minus_0, gradientX_0
-				SUBABS4 y_plus_1, y_minus_1, gradientY_1
-				SUBABS4 y_plus_0, y_minus_0, gradientY_0
-				ADD4 gradientX_1, gradientY_1, gradient_int_1
-				ADD4 gradientX_0, gradientY_0, gradient_int_0
-				CMPGTU4 gradient_int_1, threshold, comparison_1
-				CMPGTU4 gradient_int_0, threshold, comparison_0
-				XPND4 comparison_1, edge_1
-				XPND4 comparison_0, edge_0
-				STDW edge_1:edge_0, *pEdgemap[count]
-	[count] 	SUB count, 1, count
-	[count] 	B loop
-		
+loop:
+				LDDW 	.D1 	*A4++, A11:A10   ; A4 = pFrame_x_prev, A11 = x_minus_1, A10 = x_minus_0
+				LDDW 	.D2 	*B4++, B11:B10   ; B4 = pFrame_x_next, B11 = x_plus_1, B10 = x_plus_0
+				LDDW 	.D1		*A6++, A13:A12   ; A6 = pFrame_y_prev, A13 = y_minus_1, A12 = y_minus_0
+				LDDW 	.D2 	*B6++, B13:B12   ; B6 = pFrame_y_next, B13 = y_plus_1, B12 = y_plus_0
+				SUBABS4 .L1X 	A11, B11, A5	 ; A11 = x_minus_1, B11 = x_plus_1, A5 = gradient_X_1
+				SUBABS4 .L2X	B10, A10, B5	 ; B10 = x_plus_0, A10 = x_minus_0, B5 = gradient_X_0
+				SUBABS4 .L1X	A13, B13, A7	 ; A13 = y_minus_1, B13 = y_plus_1, A7 = gradient_Y_1
+				SUBABS4 .L2X	B12, A12, B7	 ; B12 = y_plus_0, A12 = y_minus_0, B7 = gradient_Y_0
+				ADD4	.L1		A5, A7, A9		 ; A5 = gradient_X_1, A7 = gradient_Y_1, A9 = gradient_1
+				ADD4	.L2		B5, B7, B9		 ; B5 = gradient_X_0, B7 = gradient_Y_0, B9 = gradient_0
+				CMPGTU4	.L1X	A9, B8, A14		 ; A9 = gradient_1, B8 = threshold (arg 6), A14 = comparison_1
+				CMPGTU4	.L2		B9, B8, B14		 ; B9 = gradient_0, B8 = threshold (arg 6), B14 = comparison_0
+				XPND4	.M2X 	A14, B3			 ; A14 = comparison_1, A3 = edge_1
+				XPND4	.M2		B14, B2			 ; B14 = comparison_0, B3 = edge_0
+				STDW	.D2		B3:B2, *B1++	 ; B3 = edge_0, B1 = pEdgemap (arg 5)
+	[A1] 		SUB 	.D1		A1, 1, A1
+	[A1] 		B 		.S2		loop
 		.endproc

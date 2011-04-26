@@ -5,15 +5,17 @@
 #include "std.h"
 
 #define CHIP_6416 1
-#define HEIGHTY 288
-#define WIDTHX 352
+
 #define TOTAL 101376 // Total when char is used
-#define TOTALINT 25344 // 101376 by 4
-#define TOTALDOUBLE 12672 // 101376 by 8
-#define HEIGHTINTY 144 // 288 by 2
-#define WIDTHINTX 176 // 352 by 2
-#define HEIGHTDOUBLEY 72 // 288 by 4
-#define WIDTHDOUBLEX 88 // 352 by 4
+#define TOTALINT 25344 // Total when int is used = 101376/4
+#define TOTALDOUBLE 12672 // Total when double is used = 101376/8
+
+#define HEIGHTY 288 // Total height with char
+#define WIDTHX 352 // Total width with char
+#define HEIGHTINTY 144 // Total height with int = 288/2
+#define WIDTHINTX 176 // Total width with int = 352/2
+#define HEIGHTDOUBLEY 72 // Total height with double = 288/4
+#define WIDTHDOUBLEX 88 // Total width with double = 352/4
 
 #include "dsk6416.h"
 #include "dsk6416_aic23.h"
@@ -23,14 +25,22 @@ extern unsigned char frame_1[HEIGHTY*WIDTHX];
 unsigned char gradient[HEIGHTY*WIDTHX];
 unsigned char edgemap[HEIGHTY*WIDTHX];
 
+// Constant Thresholds
 const int th = 45; // constant threshold fot edge map
 const int th_quad = 0x5A5A5A5A; // contains threshold (90) in 4 packed 8 bits
-clock_t start, stop, overhead; // variables for profiling
 
-void init_array();	// function to initialise arrays
-void edge_detection_c(const unsigned char *pFrame_1, unsigned char *pEdgemap); // function for edge detection in C
-void edge_detection_la(const unsigned char *pFrame_1, volatile unsigned char *pEdgemap, 
-				       volatile int count, const int widthx, const int threshold); // function for edge detection in Linear Assembly
+// Profiling Variables
+clock_t start, stop, overhead;
+
+// Function to initialise arrays
+void init_array();	
+// Function for edge detection in C
+void edge_detection_c(const unsigned char *pFrame_1, unsigned char *pEdgemap); 
+// Function for edge detection in Linear Assembly
+void edge_detection_la(const double *pFrame_x_prev, const double *pFrame_x_next,
+					   const double *pFrame_y_prev, const double *pFrame_y_next, 
+					   volatile unsigned char *pEdgemap,
+					   const int threshold, volatile int count);
 
 /* Codec configuration settings */
 DSK6416_AIC23_Config config = { \
@@ -48,6 +58,12 @@ DSK6416_AIC23_Config config = { \
 
 void main()
 {
+	const double *pFrame = (const double *)frame_1;
+	const double *pFrame_x_prev = &pFrame[0*WIDTHDOUBLEX-1];
+	const double *pFrame_x_next = &pFrame[0*WIDTHDOUBLEX+1];
+	const double *pFrame_y_prev = &pFrame[(0-1)*WIDTHDOUBLEX];
+	const double *pFrame_y_next = &pFrame[(0+1)*WIDTHDOUBLEX];
+
 	 /* Initialize the board support library, must be called first */
     DSK6416_init();
 
@@ -76,7 +92,8 @@ void main()
 
 	// Edge detection in Linear Assembly
 	start = clock();
-	edge_detection_la(frame_1, edgemap, TOTALDOUBLE, WIDTHDOUBLEX, th_quad);
+	edge_detection_la(pFrame_x_prev, pFrame_x_next, pFrame_y_prev, pFrame_y_next, 
+					  edgemap, th_quad, TOTALDOUBLE);
 	stop = clock();
 	LOG_printf(&mylog, "Edge detection (LA) cycles: %d", stop-start-overhead);
 }
@@ -84,16 +101,13 @@ void main()
 void init_array()
 {
 	int i;
-	double *d_gradient = (double *) gradient;
 	double *d_edgemap = (double *) edgemap;
 
-	// nassert that the total number of elements in d_gradient and d_edgemap = TOTALDOUBLE
-	_nassert((int)(d_gradient)%TOTALDOUBLE == 0);
+	// nassert that the total number of elements in d_edgemap = TOTALDOUBLE
 	_nassert((int)(d_edgemap)%TOTALDOUBLE == 0);
 
 	for (i=0;i<TOTALDOUBLE;i++) //initialise arrays
 	{
-		d_gradient[i]=0;
 		d_edgemap[i]=0;
 	}
 }

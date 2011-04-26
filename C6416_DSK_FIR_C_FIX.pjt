@@ -24,10 +24,10 @@ Source="C6416_DSK_FIRcfg.s62"
 Source="C6416_DSK_FIRcfg_c.c"
 
 ["Compiler" Settings: "Debug"]
-Options=-g -q -pm -o3 -fr"D:\Documents and Settings\Hari\Ajay\EdgeDetection\Debug" -d"_DEBUG" -mv6400
+Options=-g -q -pm -op2 -o3 -fr"D:\Documents and Settings\Hari\Ajay\EdgeDetection\Debug" -d"_DEBUG" -mv6400
 
 ["Compiler" Settings: "Release"]
-Options=-q -o3 -fr"D:\Documents and Settings\Hari\Ajay\EdgeDetection\Release" -mv6400
+Options=-k -q -pm -op2 -o3 -fr"D:\Documents and Settings\Hari\Ajay\EdgeDetection\Release" -mv6400
 
 ["DspBiosBuilder" Settings: "Debug"]
 Options=-v6x
@@ -40,6 +40,9 @@ Options=-q -c -m".\Debug\C6416_DSK_FIR_C_FIX.map" -o".\Debug\C6416_DSK_FIR_C_FIX
 
 ["Linker" Settings: "Release"]
 Options=-q -c -m".\Release\C6416_DSK_FIR_C_FIX.map" -o".\Release\C6416_DSK_FIR_C_FIX.out" -w -x
+
+["edge_detection_la.sa" Settings: "Debug"]
+Options="Compiler" +{-k}
 
 ["FIR.c" Settings: "Release"]
 Options="Compiler" +{-o1} -{-o3}

@@ -1,6 +1,6 @@
 ;******************************************************************************
 ;* TMS320C6x C/C++ Codegen                                          PC v5.1.0 *
-;* Date/Time created: Mon Apr 25 23:49:40 2011                                *
+;* Date/Time created: Tue Apr 26 22:33:54 2011                                *
 ;******************************************************************************
 
 ;******************************************************************************
@@ -41,117 +41,76 @@ DW$1	.dwtag  DW_TAG_subprogram, DW_AT_name("edge_detection_la"), DW_AT_symbol_na
 	.dwattr DW$1, DW_AT_begin_file("D:\Documents and Settings\Hari\Ajay\EdgeDetection\edge_detection_la.sa")
 	.dwattr DW$1, DW_AT_begin_line(0x04)
 	.dwattr DW$1, DW_AT_begin_column(0x01)
-	.dwattr DW$1, DW_AT_frame_base[DW_OP_breg31 0]
+	.dwattr DW$1, DW_AT_frame_base[DW_OP_breg31 40]
 	.dwattr DW$1, DW_AT_skeletal(0x01)
 	.dwpsn	"D:\Documents and Settings\Hari\Ajay\EdgeDetection\edge_detection_la.sa",4,1
 
 ;******************************************************************************
 ;* FUNCTION NAME: _edge_detection_la                                          *
 ;*                                                                            *
-;*   Regs Modified     : A3,A4,A5,A6,A7,A8,A9,B0,B4,B5,B6,B7,B8,A16,A17       *
-;*   Regs Used         : A3,A4,A5,A6,A7,A8,A9,B0,B3,B4,B5,B6,B7,B8,DP,SP,A16, *
-;*                           A17                                              *
+;*   Regs Modified     : A1,A4,A5,A6,A7,A9,A10,A11,A12,A13,A14,B1,B2,B3,B4,B5,*
+;*                           B6,B7,B9,B10,B11,B12,B13,DP,SP,B16,B31           *
+;*   Regs Used         : A1,A4,A5,A6,A7,A8,A9,A10,A11,A12,A13,A14,B1,B2,B3,B4,*
+;*                           B5,B6,B7,B8,B9,B10,B11,B12,B13,DP,SP,B16,B31     *
 ;******************************************************************************
 _edge_detection_la:
 
-	.map	pEdgemap/B4
-	.map	pEdgemap'/B5
-	.map	y_minus_0/A6
-	.map	y_minus_1/A7
-	.map	x_plus_0/A6
-	.map	x_plus_0'/B7
-	.map	x_plus_1/A7
-	.map	index_y_minus/A4
-	.map	gradientX_0/B7
-	.map	gradientX_1/A4
-	.map	comparison_0/B6
-	.map	comparison_1/A4
-	.map	gradientY_0/B6
-	.map	gradientY_1/A5
-	.map	index_x_plus/A5
-	.map	threshold/A8
-	.map	threshold'/A17
-	.map	x_minus_0/A8
-	.map	edge_0/B6
-	.map	x_minus_1/A9
-	.map	edge_1/B7
-	.map	count/A6
-	.map	count'/B0
-	.map	count''/B4
-	.map	index_y_plus/A4
-	.map	widthx/B6
-	.map	widthx'/A16
-	.map	gradient_int_0/B6
-	.map	gradient_int_1/A4
-	.map	pFrame_1/A3
-	.map	pFrame_1'/A4
-	.map	y_plus_0/A4
-	.map	y_plus_0'/B6
-	.map	y_plus_1/A5
-	.map	index_x_minus/A4
 
 ;** --------------------------------------------------------------------------*
 ;
 ;
-; _edge_detection_la .cproc pFrame_1, pEdgemap, count, widthx, threshold
-; 				   .reg index_x_plus, index_x_minus, index_y_plus, index_y_minus
-; 				   .reg x_plus_1:x_plus_0, x_minus_1:x_minus_0
-; 				   .reg y_plus_1:y_plus_0, y_minus_1:y_minus_0
-; 				   .reg gradientX_1, gradientX_0, gradientY_1, gradientY_0
-; 				   .reg gradient_int_1, gradient_int_0
-; 				   .reg comparison_1, comparison_0, edge_1, edge_0
+; _edge_detection_la .cproc pFrame_x_prev, pFrame_x_next, pFrame_y_prev, pFrame_y_next, pEdgemap, threshold, count
 
-           MVC     .S2     CSR,B8
-||         MV      .L1X    widthx,widthx'
+           STW     .D2T2   DP,*SP--(40)      ; |4| 
+||         MV      .L1X    SP,A9             ; |4| 
 
-           AND     .L2     -2,B8,B6
-||         ADD     .L1X    count,widthx,index_y_plus ; |14| 
-||         MV      .S2X    count,count'
-||         MV      .S1     pFrame_1',pFrame_1 ; |4| 
+           STDW    .D2T2   B13:B12,*+SP(32)
+           STDW    .D2T2   B11:B10,*+SP(24)
 
-           MVC     .S2     B6,CSR            ; interrupts off
-||         MV      .L2X    count,count''
-||         ADD     .L1     0x1,count,index_x_plus ; |12| 
-||         MV      .S1     threshold,threshold'
-||         MV      .D2     pEdgemap,pEdgemap'
+           STDW    .D1T1   A11:A10,*-A9(32)
+||         MVC     .S2     CSR,B16
+
+           STDW    .D1T1   A13:A12,*-A9(24)
+||         AND     .L2     -2,B16,B5
+
+           STW     .D1T1   A14,*-A9(36)
+||         MVC     .S2     B5,CSR            ; interrupts off
+||         MV      .L1     A10,A1            ; |5|  move count (arg 7) from A10 to A1
+||         MV      .L2     B3,B31
+||         MV      .D2X    A8,B1             ; |6|  move pEdgemap (arg 5) from A8 to B1
 
 ;*----------------------------------------------------------------------------*
 ;*   SOFTWARE PIPELINE INFORMATION
 ;*
-;*      Loop source line                 : 12
-;*      Loop closing brace source line   : 32
+;*      Loop source line                 : 9
+;*      Loop closing brace source line   : 25
 ;*      Known Minimum Trip Count         : 1                    
 ;*      Known Max Trip Count Factor      : 1
 ;*      Loop Carried Dependency Bound(^) : 12
-;*      Unpartitioned Resource Bound     : 4
-;*      Partitioned Resource Bound(*)    : 5
+;*      Unpartitioned Resource Bound     : 3
+;*      Partitioned Resource Bound(*)    : 3
 ;*      Resource Partition:
 ;*                                A-side   B-side
-;*      .L units                     3        3     
+;*      .L units                     3*       3*    
 ;*      .S units                     2        1     
-;*      .D units                     2        3     
-;*      .M units                     1        1     
-;*      .X cross paths               5*       4     
-;*      .T address paths             3        2     
+;*      .D units                     2        3*    
+;*      .M units                     0        2     
+;*      .X cross paths               3*       3*    
+;*      .T address paths             2        3*    
 ;*      Long read paths              0        0     
 ;*      Long write paths             0        0     
-;*      Logical  ops (.LS)           1        0     (.L or .S unit)
-;*      Addition ops (.LSD)          4        4     (.L or .S or .D unit)
-;*      Bound(.L .S .LS)             3        2     
-;*      Bound(.L .S .D .LS .LSD)     4        4     
+;*      Logical  ops (.LS)           0        0     (.L or .S unit)
+;*      Addition ops (.LSD)          1        0     (.L or .S or .D unit)
+;*      Bound(.L .S .LS)             3*       2     
+;*      Bound(.L .S .D .LS .LSD)     3*       3*    
 ;*
 ;*      Searching for software pipeline schedule at ...
 ;*         ii = 12 Did not find schedule
-;*         ii = 13 Did not find schedule
-;*         ii = 14 Did not find schedule
-;*         ii = 15 Schedule found with 2 iterations in parallel
+;*         ii = 13 Schedule found with 1 iterations in parallel
 ;*      Done
 ;*
-;*      Collapsed epilog stages     : 1
-;*      Prolog not removed
+;*      Collapsed epilog stages     : 0
 ;*      Collapsed prolog stages     : 0
-;*
-;*      Minimum required memory pad : 0 bytes
 ;*
 ;*      Minimum safe trip count     : 1
 ;*----------------------------------------------------------------------------*
@@ -160,62 +119,65 @@ L1:    ; PIPED LOOP PROLOG
 L2:    ; PIPED LOOP KERNEL
 DW$L$_edge_detection_la$3$B:
 
-           LDDW    .D1T1   *+pFrame_1[index_y_plus],y_plus_1:y_plus_0 ; |18| <0,2>  ^ 
-||         ADD     .L1X    0xffffffff,count',index_x_minus ; |13| <0,2> 
+           LDDW    .D1T1   *A4++,A11:A10     ; |9| <0,0>  ^  A4 = pFrame_x_prev, A11 = x_minus_1, A10 = x_minus_0
+||         LDDW    .D2T2   *B4++,B11:B10     ; |10| <0,0>  ^  B4 = pFrame_x_next, B11 = x_plus_1, B10 = x_plus_0
 
-           LDDW    .D1T1   *+pFrame_1[index_x_plus],x_plus_1:x_plus_0 ; |16| <0,3>  ^ 
+           LDDW    .D1T1   *A6++,A13:A12     ; |11| <0,1>  ^  A6 = pFrame_y_prev, A13 = y_minus_1, A12 = y_minus_0
+||         LDDW    .D2T2   *B6++,B13:B12     ; |12| <0,1>  ^  B6 = pFrame_y_next, B13 = y_plus_1, B12 = y_plus_0
 
-           SUB     .L1X    count',widthx',index_y_minus ; |15| <0,4> 
-||         LDDW    .D1T1   *+pFrame_1[index_x_minus],x_minus_1:x_minus_0 ; |17| <0,4>  ^ 
+           NOP             3
 
-           LDDW    .D1T1   *+pFrame_1[index_y_minus],y_minus_1:y_minus_0 ; |19| <0,5>  ^ 
+           SUBABS4 .L2X    B10,A10,B5        ; |14| <0,5>  B10 = x_plus_0, A10 = x_minus_0, B5 = gradient_X_0
+||         SUBABS4 .L1X    A11,B11,A5        ; |13| <0,5>  ^  A11 = x_minus_1, B11 = x_plus_1, A5 = gradient_X_1
+
+   [ A1]   ADD     .S1     0xffffffff,A1,A1  ; |24| <0,6> 
+||         SUBABS4 .L2X    B12,A12,B7        ; |16| <0,6>  B12 = y_plus_0, A12 = y_minus_0, B7 = gradient_Y_0
+||         SUBABS4 .L1X    A13,B13,A7        ; |15| <0,6>  ^  A13 = y_minus_1, B13 = y_plus_1, A7 = gradient_Y_1
+
+           ADD4    .L2     B5,B7,B9          ; |18| <0,7>  B5 = gradient_X_0, B7 = gradient_Y_0, B9 = gradient_0
+|| [ A1]   B       .S1     L2                ; |25| <0,7> 
+||         ADD4    .L1     A5,A7,A9          ; |17| <0,7>  ^  A5 = gradient_X_1, A7 = gradient_Y_1, A9 = gradient_1
+
+           CMPGTU4 .S2     B9,B8,DP          ; |20| <0,8>  B9 = gradient_0, B8 = threshold (arg 6), B14 = comparison_0
+||         CMPGTU4 .S1X    A9,B8,A14         ; |19| <0,8>  ^  A9 = gradient_1, B8 = threshold (arg 6), A14 = comparison_1
+
+           XPND4   .M2     DP,B2             ; |22| <0,9>  B14 = comparison_0, B3 = edge_0
+           XPND4   .M2X    A14,B3            ; |21| <0,10>  ^  A14 = comparison_1, A3 = edge_1
            NOP             1
-           MV      .L2X    y_plus_0,y_plus_0' ; |18| <0,7>  ^ Define a twin register
-           MV      .L2X    x_plus_0,x_plus_0' ; |16| <0,8>  ^ Define a twin register
-
-           SUBABS4 .L1     x_plus_1,x_minus_1,gradientX_1 ; |20| <0,9>  ^ 
-||         SUBABS4 .L2X    x_plus_0',x_minus_0,gradientX_0 ; |21| <0,9>  ^ 
-
-   [ count'] ADD   .S2     0xffffffff,count',count' ; |31| <0,10> 
-||         SUBABS4 .L2X    y_plus_0',y_minus_0,gradientY_0 ; |23| <0,10>  ^ 
-||         SUBABS4 .L1     y_plus_1,y_minus_1,gradientY_1 ; |22| <0,10>  ^ 
-
-           ADD4    .L2     gradientX_0,gradientY_0,gradient_int_0 ; |25| <0,11>  ^ 
-|| [ count'] B     .S2     L2                ; |32| <0,11> 
-||         ADD4    .L1     gradientX_1,gradientY_1,gradient_int_1 ; |24| <0,11>  ^ 
-
-           CMPGTU4 .S2X    gradient_int_0,threshold',comparison_0 ; |27| <0,12>  ^ 
-||         CMPGTU4 .S1     gradient_int_1,threshold',comparison_1 ; |26| <0,12>  ^ 
-
-           XPND4   .M2     comparison_0,edge_0 ; |29| <0,13>  ^ 
-           XPND4   .M2X    comparison_1,edge_1 ; |28| <0,14>  ^ 
-           ADD     .L1X    0x1,count',index_x_plus ; |12| <1,0> 
-
-   [ count'] MV    .L2     count',count''    ; |31| <0,16> Inserted to break DPG cycle
-||         STDW    .D2T2   edge_1:edge_0,*+pEdgemap'[count''] ; |30| <0,16>  ^ 
-||         ADD     .L1X    count',widthx',index_y_plus ; |14| <1,1> 
-
+           STDW    .D2T2   B3:B2,*B1++       ; |23| <0,12>  ^  B3 = edge_0, B1 = pEdgemap (arg 5)
 DW$L$_edge_detection_la$3$E:
 ;** --------------------------------------------------------------------------*
 L3:    ; PIPED LOOP EPILOG
-           RET     .S2     B3                ; |34| 
-           MVC     .S2     B8,CSR            ; interrupts on
-	.dwpsn	"D:\Documents and Settings\Hari\Ajay\EdgeDetection\edge_detection_la.sa",34,1
+
+           LDDW    .D2T2   *+SP(32),B13:B12  ; |26| 
+||         MVC     .S2     B16,CSR           ; interrupts on
+||         MV      .L1X    SP,A9             ; |26| 
+
+           LDDW    .D2T2   *+SP(24),B11:B10  ; |26| 
+||         LDDW    .D1T1   *+A9(8),A11:A10   ; |26| 
+
+           RET     .S2     B31               ; |26| 
+||         LDDW    .D1T1   *+A9(16),A13:A12  ; |26| 
+
+           LDW     .D2T2   *++SP(40),DP      ; |26| 
+||         LDW     .D1T1   *+A9(4),A14       ; |26| 
+
+	.dwpsn	"D:\Documents and Settings\Hari\Ajay\EdgeDetection\edge_detection_la.sa",26,1
            NOP             4
-           ; BRANCH OCCURS {B3}              ; |34| 
+           ; BRANCH OCCURS {B31}             ; |26| 
 
 DW$2	.dwtag  DW_TAG_loop
-	.dwattr DW$2, DW_AT_name("D:\Documents and Settings\Hari\Ajay\EdgeDetection\edge_detection_la.asm:L2:1:1303771780")
+	.dwattr DW$2, DW_AT_name("D:\Documents and Settings\Hari\Ajay\EdgeDetection\edge_detection_la.asm:L2:1:1303853635")
 	.dwattr DW$2, DW_AT_begin_file("D:\Documents and Settings\Hari\Ajay\EdgeDetection\edge_detection_la.sa")
-	.dwattr DW$2, DW_AT_begin_line(0x0c)
-	.dwattr DW$2, DW_AT_end_line(0x20)
+	.dwattr DW$2, DW_AT_begin_line(0x09)
+	.dwattr DW$2, DW_AT_end_line(0x19)
 DW$3	.dwtag  DW_TAG_loop_range
 	.dwattr DW$3, DW_AT_low_pc(DW$L$_edge_detection_la$3$B)
 	.dwattr DW$3, DW_AT_high_pc(DW$L$_edge_detection_la$3$E)
 	.dwendtag DW$2
 
 	.dwattr DW$1, DW_AT_end_file("D:\Documents and Settings\Hari\Ajay\EdgeDetection\edge_detection_la.sa")
-	.dwattr DW$1, DW_AT_end_line(0x22)
+	.dwattr DW$1, DW_AT_end_line(0x1a)
 	.dwattr DW$1, DW_AT_end_column(0x01)
 	.dwendtag DW$1
 
