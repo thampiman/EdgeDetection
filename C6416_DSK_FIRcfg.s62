@@ -5,7 +5,7 @@
 ;; INPUT C6416_DSK_FIR.cdb
 
 ;; CONFIGURATION/VERSION INFORMATION
-	.asg "Sun Apr 10 11:20:03 2011", VERS$DATE
+	.asg "Tue Apr 26 23:33:35 2011", VERS$DATE
 
 ;; PROLOGUE
 	.include C6416_DSK_FIRcfg.h62
@@ -82,7 +82,7 @@ LCK$NUMOF           .set 0
 LCK$SETOF           .set 00H
 SIO$NUMOF           .set 0
 SIO$SETOF           .set 00H
-STS$NUMOF           .set 1
+STS$NUMOF           .set 5
 STS$SETOF           .set 00H
 DEV$NUMOF           .set 0
 DEV$SETOF           .set 00H
@@ -895,6 +895,42 @@ DIO$SETOF           .set 00H
 	.asg 00H, _prev
 	.asg 00H, _prevlow
 	STS_Obj 1, IDL_busyObj, 0, _prev, _prevlow
+
+;; ======== STS_Obj init_array_sts ========
+;; <add comments here>
+;;
+;; STS_Obj init_array_sts (prev, prevlow)
+	.global init_array_sts
+	.asg 00H, _prev
+	.asg 00H, _prevlow
+	STS_Obj 1, init_array_sts, 0, _prev, _prevlow
+
+;; ======== STS_Obj edge_detection_c_sts ========
+;; <add comments here>
+;;
+;; STS_Obj edge_detection_c_sts (prev, prevlow)
+	.global edge_detection_c_sts
+	.asg 00H, _prev
+	.asg 00H, _prevlow
+	STS_Obj 1, edge_detection_c_sts, 0, _prev, _prevlow
+
+;; ======== STS_Obj edge_detection_la_sts ========
+;; <add comments here>
+;;
+;; STS_Obj edge_detection_la_sts (prev, prevlow)
+	.global edge_detection_la_sts
+	.asg 00H, _prev
+	.asg 00H, _prevlow
+	STS_Obj 1, edge_detection_la_sts, 0, _prev, _prevlow
+
+;; ======== STS_Obj overhead_sts ========
+;; <add comments here>
+;;
+;; STS_Obj overhead_sts (prev, prevlow)
+	.global overhead_sts
+	.asg 00H, _prev
+	.asg 00H, _prevlow
+	STS_Obj 1, overhead_sts, 0, _prev, _prevlow
 
 ;; MODULE INITIALIZATION
 	.sect ".sysinit"

@@ -92,7 +92,7 @@ type GlobalStatus {
         prop Visible :: 0
         prop Writable :: 0
     }
-    global DATE :: "Sun Apr 10 11:20:03 2011" { 
+    global DATE :: "Tue Apr 26 23:33:35 2011" { 
         prop Type :: "{21455EA3-B96A-11cf-9BFE-0000C0AC14C7}"
         prop Visible :: 0
         prop Writable :: 0
@@ -6892,7 +6892,7 @@ type STS {
         prop Writable :: 0
         prop NoGen :: 1
     }
-    global gNumOf :: 1 { 
+    global gNumOf :: 5 { 
         prop Visible :: 0
         prop Writable :: 0
         prop NoGen :: 1
@@ -21700,5 +21700,73 @@ object mylog :: LOG {
     param logtype :: "circular"
     param iType :: "printf"
     param iFormat :: "0x%x, 0x%x, 0x%x"
+}
+
+object init_array_sts :: STS {
+    param iComment :: "<add comments here>"
+    param iIsUsed :: 1
+    param iId :: 0
+    param iDelUser :: "USER"
+    param iDelMsg :: "ok"
+    param prev :: 0
+    param format :: "%g"
+    param unittype :: "Not time based"
+    param operation :: "Nothing"
+    param iA :: 1
+    param iB :: 0
+    param iC :: 1
+    param prevhigh :: 0
+    param prevlow :: 0
+}
+
+object edge_detection_c_sts :: STS {
+    param iComment :: "<add comments here>"
+    param iIsUsed :: 1
+    param iId :: 0
+    param iDelUser :: "USER"
+    param iDelMsg :: "ok"
+    param prev :: 0
+    param format :: "%g"
+    param unittype :: "Not time based"
+    param operation :: "Nothing"
+    param iA :: 1
+    param iB :: 0
+    param iC :: 1
+    param prevhigh :: 0
+    param prevlow :: 0
+}
+
+object edge_detection_la_sts :: STS {
+    param iComment :: "<add comments here>"
+    param iIsUsed :: 1
+    param iId :: 0
+    param iDelUser :: "USER"
+    param iDelMsg :: "ok"
+    param prev :: 0
+    param format :: "%g"
+    param unittype :: "Not time based"
+    param operation :: "Nothing"
+    param iA :: 1
+    param iB :: 0
+    param iC :: 1
+    param prevhigh :: 0
+    param prevlow :: 0
+}
+
+object overhead_sts :: STS {
+    param iComment :: "<add comments here>"
+    param iIsUsed :: 1
+    param iId :: 0
+    param iDelUser :: "USER"
+    param iDelMsg :: "ok"
+    param prev :: 0
+    param format :: "%g"
+    param unittype :: "Not time based"
+    param operation :: "Nothing"
+    param iA :: 1
+    param iB :: 0
+    param iC :: 1
+    param prevhigh :: 0
+    param prevlow :: 0
 }
 

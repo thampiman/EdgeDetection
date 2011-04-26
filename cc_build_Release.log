@@ -1,9 +1,7 @@
 ---------------------  C6416_DSK_FIR_C_FIX.pjt - Release  ---------------------
 [C6416_DSK_FIR.cdb] "C:\CCStudio_v3.1\plugins\bios\gconfgen" C6416_DSK_FIR.cdb
 
-"C:\CCStudio_v3.1\C6000\cgtools\bin\cl6x" -k -q -pm -op2 -o3 -fr"D:/Documents and Settings/Hari/Ajay/EdgeDetection/Release" -mv6400 -@"Release.lkf"
-
-[FIR.c] "C:\CCStudio_v3.1\C6000\cgtools\bin\cl6x" -k -q -pm -op2 -o1 -fr"D:/Documents and Settings/Hari/Ajay/EdgeDetection/Release" -mv6400 -@"Release.lkf" "FIR.c"
+"C:\CCStudio_v3.1\C6000\cgtools\bin\cl6x" -g -k -q -pm -op2 -o3 -fr"D:/Documents and Settings/Hari/Ajay/EdgeDetection/Release" -mv6400 -@"Release.lkf"
 
 [Linking...] "C:\CCStudio_v3.1\C6000\cgtools\bin\cl6x" -@"Release.lkf"
 <Linking>

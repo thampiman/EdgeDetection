@@ -72,6 +72,10 @@ _IDL_cpuLoad = IDL_cpuLoad;
 _LOG_system = LOG_system;
 _mylog = mylog;
 _IDL_busyObj = IDL_busyObj;
+_init_array_sts = init_array_sts;
+_edge_detection_c_sts = edge_detection_c_sts;
+_edge_detection_la_sts = edge_detection_la_sts;
+_overhead_sts = overhead_sts;
 
 /* MODULE GBL */
 

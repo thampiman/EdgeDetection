@@ -1,7 +1,8 @@
 #include "C6416_DSK_FIRcfg.h"
 #include "images.h"
-#include <math.h>
-#include <time.h>
+#include <clk.h>
+#include <sts.h>
+#include <trc.h>
 #include "std.h"
 
 #define CHIP_6416 1
@@ -26,11 +27,7 @@ unsigned char gradient[HEIGHTY*WIDTHX];
 unsigned char edgemap[HEIGHTY*WIDTHX];
 
 // Constant Thresholds
-const int th = 45; // constant threshold fot edge map
 const int th_quad = 0x5A5A5A5A; // contains threshold (90) in 4 packed 8 bits
-
-// Profiling Variables
-clock_t start, stop, overhead;
 
 // Function to initialise arrays
 void init_array();	
@@ -68,34 +65,27 @@ void main()
     DSK6416_init();
 
 	// First get the overhead before profiling code
-	start = clock();
-	stop = clock();
-	overhead = stop-start;
+	STS_set(&overhead_sts, clock());
+	STS_delta(&overhead_sts, clock());
 
 	// Initialise arrays
-	start = clock();
+	STS_set(&init_array_sts, clock());
 	init_array();
-	stop = clock();
-	LOG_printf(&mylog, "Initialisation cycles: %d", stop-start-overhead);
+	STS_delta(&init_array_sts, clock());
 
 	// Edge detection in C
-	start = clock();
+	STS_set(&edge_detection_c_sts, clock());
 	edge_detection_c(frame_1, edgemap);
-	stop = clock();
-	LOG_printf(&mylog, "Edge detection (C) cycles: %d", stop-start-overhead);
+	STS_delta(&edge_detection_c_sts, clock());
 
 	// Reset arrays
-	start = clock();
 	init_array();
-	stop = clock();
-	LOG_printf(&mylog, "Initialisation cycles: %d", stop-start-overhead);
 
 	// Edge detection in Linear Assembly
-	start = clock();
+	STS_set(&edge_detection_la_sts, clock());
 	edge_detection_la(pFrame_x_prev, pFrame_x_next, pFrame_y_prev, pFrame_y_next, 
 					  edgemap, th_quad, TOTALDOUBLE);
-	stop = clock();
-	LOG_printf(&mylog, "Edge detection (LA) cycles: %d", stop-start-overhead);
+	STS_delta(&edge_detection_la_sts, clock());
 }
 
 void init_array()

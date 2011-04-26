@@ -1,6 +1,6 @@
 ;******************************************************************************
 ;* TMS320C6x C/C++ Codegen                                          PC v5.1.0 *
-;* Date/Time created: Tue Apr 26 22:33:54 2011                                *
+;* Date/Time created: Wed Apr 27 00:01:22 2011                                *
 ;******************************************************************************
 
 ;******************************************************************************
@@ -16,7 +16,7 @@
 ;*   Pipelining        : Enabled                                              *
 ;*   Speculate Loads   : Disabled                                             *
 ;*   Memory Aliases    : Presume are aliases (pessimistic)                    *
-;*   Debug Info        : Optimized w/Profiling Info                           *
+;*   Debug Info        : DWARF Debug                                          *
 ;*                                                                            *
 ;******************************************************************************
 
@@ -41,17 +41,23 @@ DW$1	.dwtag  DW_TAG_subprogram, DW_AT_name("edge_detection_la"), DW_AT_symbol_na
 	.dwattr DW$1, DW_AT_begin_file("D:\Documents and Settings\Hari\Ajay\EdgeDetection\edge_detection_la.sa")
 	.dwattr DW$1, DW_AT_begin_line(0x04)
 	.dwattr DW$1, DW_AT_begin_column(0x01)
-	.dwattr DW$1, DW_AT_frame_base[DW_OP_breg31 40]
-	.dwattr DW$1, DW_AT_skeletal(0x01)
 	.dwpsn	"D:\Documents and Settings\Hari\Ajay\EdgeDetection\edge_detection_la.sa",4,1
+
+	.dwfde DW$CIE
 
 ;******************************************************************************
 ;* FUNCTION NAME: _edge_detection_la                                          *
 ;*                                                                            *
 ;*   Regs Modified     : A1,A4,A5,A6,A7,A9,A10,A11,A12,A13,A14,B1,B2,B3,B4,B5,*
-;*                           B6,B7,B9,B10,B11,B12,B13,DP,SP,B16,B31           *
+;*                           B6,B7,B9,B10,B11,B12,B13,DP,SP,B16               *
 ;*   Regs Used         : A1,A4,A5,A6,A7,A8,A9,A10,A11,A12,A13,A14,B1,B2,B3,B4,*
-;*                           B5,B6,B7,B8,B9,B10,B11,B12,B13,DP,SP,B16,B31     *
+;*                           B5,B6,B7,B8,B9,B10,B11,B12,B13,DP,SP,B16         *
+;******************************************************************************
+
+;******************************************************************************
+;*                                                                            *
+;* Using -g (debug) with optimization (-o3) may disable key optimizations!    *
+;*                                                                            *
 ;******************************************************************************
 _edge_detection_la:
 
@@ -60,28 +66,43 @@ _edge_detection_la:
 ;
 ;
 ; _edge_detection_la .cproc pFrame_x_prev, pFrame_x_next, pFrame_y_prev, pFrame_y_next, pEdgemap, threshold, count
+	.dwcfa	0x0e, 0
+	.dwcfa	0x09, 126, 19
 
-           STW     .D2T2   DP,*SP--(40)      ; |4| 
+           STW     .D2T2   DP,*SP--(48)      ; |4| 
 ||         MV      .L1X    SP,A9             ; |4| 
 
-           STDW    .D2T2   B13:B12,*+SP(32)
-           STDW    .D2T2   B11:B10,*+SP(24)
-
-           STDW    .D1T1   A11:A10,*-A9(32)
-||         MVC     .S2     CSR,B16
-
-           STDW    .D1T1   A13:A12,*-A9(24)
-||         AND     .L2     -2,B16,B5
-
-           STW     .D1T1   A14,*-A9(36)
-||         MVC     .S2     B5,CSR            ; interrupts off
-||         MV      .L1     A10,A1            ; |5|  move count (arg 7) from A10 to A1
-||         MV      .L2     B3,B31
-||         MV      .D2X    A8,B1             ; |6|  move pEdgemap (arg 5) from A8 to B1
-
+	.dwcfa	0x80, 30, 0
+           STDW    .D2T2   B13:B12,*+SP(40)
+	.dwcfa	0x80, 28, 1
+	.dwcfa	0x80, 29, 2
+           STDW    .D2T2   B11:B10,*+SP(32)
+	.dwcfa	0x80, 26, 3
+	.dwcfa	0x80, 27, 4
+           STW     .D2T2   B3,*+SP(28)
+	.dwcfa	0x80, 19, 5
+           STW     .D1T1   A14,*-A9(24)
+	.dwcfa	0x80, 14, 6
+           STDW    .D1T1   A13:A12,*-A9(32)
+	.dwcfa	0x80, 12, 7
+	.dwcfa	0x80, 13, 8
+           STDW    .D1T1   A11:A10,*-A9(40)
+	.dwcfa	0x80, 10, 9
+	.dwcfa	0x80, 11, 10
+	.dwpsn	"D:\Documents and Settings\Hari\Ajay\EdgeDetection\edge_detection_la.sa",2,1
+	.dwpsn	"D:\Documents and Settings\Hari\Ajay\EdgeDetection\edge_detection_la.sa",3,1
+	.dwpsn	"D:\Documents and Settings\Hari\Ajay\EdgeDetection\edge_detection_la.sa",5,1
+           MV      .L1     A10,A1            ; |5|  move count (arg 7) from A10 to A1
+	.dwpsn	"D:\Documents and Settings\Hari\Ajay\EdgeDetection\edge_detection_la.sa",6,1
+           MV      .L2X    A8,B1             ; |6|  move pEdgemap (arg 5) from A8 to B1
+	.dwpsn	"D:\Documents and Settings\Hari\Ajay\EdgeDetection\edge_detection_la.sa",10,1
+           MVC     .S2     CSR,B16
+           AND     .L2     -2,B16,B5
+           MVC     .S2     B5,CSR            ; interrupts off
 ;*----------------------------------------------------------------------------*
 ;*   SOFTWARE PIPELINE INFORMATION
 ;*
+;*      Loop label : loop
 ;*      Loop source line                 : 9
 ;*      Loop closing brace source line   : 25
 ;*      Known Minimum Trip Count         : 1                    
@@ -116,7 +137,7 @@ _edge_detection_la:
 ;*----------------------------------------------------------------------------*
 L1:    ; PIPED LOOP PROLOG
 ;** --------------------------------------------------------------------------*
-L2:    ; PIPED LOOP KERNEL
+loop:    ; PIPED LOOP KERNEL
 DW$L$_edge_detection_la$3$B:
 
            LDDW    .D1T1   *A4++,A11:A10     ; |9| <0,0>  ^  A4 = pFrame_x_prev, A11 = x_minus_1, A10 = x_minus_0
@@ -135,7 +156,7 @@ DW$L$_edge_detection_la$3$B:
 ||         SUBABS4 .L1X    A13,B13,A7        ; |15| <0,6>  ^  A13 = y_minus_1, B13 = y_plus_1, A7 = gradient_Y_1
 
            ADD4    .L2     B5,B7,B9          ; |18| <0,7>  B5 = gradient_X_0, B7 = gradient_Y_0, B9 = gradient_0
-|| [ A1]   B       .S1     L2                ; |25| <0,7> 
+|| [ A1]   B       .S1     loop              ; |25| <0,7> 
 ||         ADD4    .L1     A5,A7,A9          ; |17| <0,7>  ^  A5 = gradient_X_1, A7 = gradient_Y_1, A9 = gradient_1
 
            CMPGTU4 .S2     B9,B8,DP          ; |20| <0,8>  B9 = gradient_0, B8 = threshold (arg 6), B14 = comparison_0
@@ -148,26 +169,35 @@ DW$L$_edge_detection_la$3$B:
 DW$L$_edge_detection_la$3$E:
 ;** --------------------------------------------------------------------------*
 L3:    ; PIPED LOOP EPILOG
-
-           LDDW    .D2T2   *+SP(32),B13:B12  ; |26| 
-||         MVC     .S2     B16,CSR           ; interrupts on
-||         MV      .L1X    SP,A9             ; |26| 
-
-           LDDW    .D2T2   *+SP(24),B11:B10  ; |26| 
-||         LDDW    .D1T1   *+A9(8),A11:A10   ; |26| 
-
-           RET     .S2     B31               ; |26| 
-||         LDDW    .D1T1   *+A9(16),A13:A12  ; |26| 
-
-           LDW     .D2T2   *++SP(40),DP      ; |26| 
-||         LDW     .D1T1   *+A9(4),A14       ; |26| 
-
+           MVC     .S2     B16,CSR           ; interrupts on
 	.dwpsn	"D:\Documents and Settings\Hari\Ajay\EdgeDetection\edge_detection_la.sa",26,1
-           NOP             4
-           ; BRANCH OCCURS {B31}             ; |26| 
+
+           MV      .L1X    SP,A9             ; |26| 
+||         LDDW    .D2T2   *+SP(40),B13:B12  ; |26| 
+
+	.dwcfa	0xc0, 29
+	.dwcfa	0xc0, 28
+           LDDW    .D2T2   *+SP(32),B11:B10  ; |26| 
+	.dwcfa	0xc0, 27
+	.dwcfa	0xc0, 26
+           LDW     .D2T2   *+SP(28),B3       ; |26| 
+	.dwcfa	0xc0, 19
+           LDW     .D1T1   *+A9(24),A14      ; |26| 
+	.dwcfa	0xc0, 14
+           LDDW    .D1T1   *+A9(16),A13:A12  ; |26| 
+	.dwcfa	0xc0, 13
+	.dwcfa	0xc0, 12
+           LDDW    .D1T1   *+A9(8),A11:A10   ; |26| 
+	.dwcfa	0xc0, 11
+	.dwcfa	0xc0, 10
+           LDW     .D2T2   *++SP(48),DP      ; |26| 
+	.dwcfa	0x0e, 0
+	.dwcfa	0xc0, 30
+           RETNOP  .S2     B3,5              ; |26| 
+           ; BRANCH OCCURS {B3}              ; |26| 
 
 DW$2	.dwtag  DW_TAG_loop
-	.dwattr DW$2, DW_AT_name("D:\Documents and Settings\Hari\Ajay\EdgeDetection\edge_detection_la.asm:L2:1:1303853635")
+	.dwattr DW$2, DW_AT_name("D:\Documents and Settings\Hari\Ajay\EdgeDetection\edge_detection_la.asm:L2:1:1303858882")
 	.dwattr DW$2, DW_AT_begin_file("D:\Documents and Settings\Hari\Ajay\EdgeDetection\edge_detection_la.sa")
 	.dwattr DW$2, DW_AT_begin_line(0x09)
 	.dwattr DW$2, DW_AT_end_line(0x19)
@@ -179,6 +209,7 @@ DW$3	.dwtag  DW_TAG_loop_range
 	.dwattr DW$1, DW_AT_end_file("D:\Documents and Settings\Hari\Ajay\EdgeDetection\edge_detection_la.sa")
 	.dwattr DW$1, DW_AT_end_line(0x1a)
 	.dwattr DW$1, DW_AT_end_column(0x01)
+	.dwendentry
 	.dwendtag DW$1
 
 	.clearmap
@@ -194,6 +225,140 @@ DW$T$19	.dwtag  DW_TAG_subroutine_type
 	.dwattr DW$T$19, DW_AT_language(DW_LANG_C)
 
 	.dwattr DW$CU, DW_AT_language(DW_LANG_C)
+
+;***************************************************************
+;* DWARF CIE ENTRIES                                           *
+;***************************************************************
+
+DW$CIE	.dwcie 1, 126
+	.dwcfa	0x0c, 31, 0
+	.dwcfa	0x07, 0
+	.dwcfa	0x07, 1
+	.dwcfa	0x07, 2
+	.dwcfa	0x07, 3
+	.dwcfa	0x07, 4
+	.dwcfa	0x07, 5
+	.dwcfa	0x07, 6
+	.dwcfa	0x07, 7
+	.dwcfa	0x07, 8
+	.dwcfa	0x07, 9
+	.dwcfa	0x08, 10
+	.dwcfa	0x08, 11
+	.dwcfa	0x08, 12
+	.dwcfa	0x08, 13
+	.dwcfa	0x08, 14
+	.dwcfa	0x08, 15
+	.dwcfa	0x07, 16
+	.dwcfa	0x07, 17
+	.dwcfa	0x07, 18
+	.dwcfa	0x07, 19
+	.dwcfa	0x07, 20
+	.dwcfa	0x07, 21
+	.dwcfa	0x07, 22
+	.dwcfa	0x07, 23
+	.dwcfa	0x07, 24
+	.dwcfa	0x07, 25
+	.dwcfa	0x08, 26
+	.dwcfa	0x08, 27
+	.dwcfa	0x08, 28
+	.dwcfa	0x08, 29
+	.dwcfa	0x08, 30
+	.dwcfa	0x08, 31
+	.dwcfa	0x08, 32
+	.dwcfa	0x07, 33
+	.dwcfa	0x07, 34
+	.dwcfa	0x07, 35
+	.dwcfa	0x07, 36
+	.dwcfa	0x07, 37
+	.dwcfa	0x07, 38
+	.dwcfa	0x07, 39
+	.dwcfa	0x07, 40
+	.dwcfa	0x07, 41
+	.dwcfa	0x07, 42
+	.dwcfa	0x07, 43
+	.dwcfa	0x07, 44
+	.dwcfa	0x07, 45
+	.dwcfa	0x07, 46
+	.dwcfa	0x07, 47
+	.dwcfa	0x07, 48
+	.dwcfa	0x07, 49
+	.dwcfa	0x07, 50
+	.dwcfa	0x07, 51
+	.dwcfa	0x07, 52
+	.dwcfa	0x07, 53
+	.dwcfa	0x07, 54
+	.dwcfa	0x07, 55
+	.dwcfa	0x07, 56
+	.dwcfa	0x07, 57
+	.dwcfa	0x07, 58
+	.dwcfa	0x07, 59
+	.dwcfa	0x07, 60
+	.dwcfa	0x07, 61
+	.dwcfa	0x07, 62
+	.dwcfa	0x07, 63
+	.dwcfa	0x07, 64
+	.dwcfa	0x07, 65
+	.dwcfa	0x07, 66
+	.dwcfa	0x07, 67
+	.dwcfa	0x07, 68
+	.dwcfa	0x07, 69
+	.dwcfa	0x07, 70
+	.dwcfa	0x07, 71
+	.dwcfa	0x07, 72
+	.dwcfa	0x07, 73
+	.dwcfa	0x07, 74
+	.dwcfa	0x07, 75
+	.dwcfa	0x07, 76
+	.dwcfa	0x07, 77
+	.dwcfa	0x07, 78
+	.dwcfa	0x07, 79
+	.dwcfa	0x07, 80
+	.dwcfa	0x07, 81
+	.dwcfa	0x07, 82
+	.dwcfa	0x07, 83
+	.dwcfa	0x07, 84
+	.dwcfa	0x07, 85
+	.dwcfa	0x07, 86
+	.dwcfa	0x07, 87
+	.dwcfa	0x07, 88
+	.dwcfa	0x07, 89
+	.dwcfa	0x07, 90
+	.dwcfa	0x07, 91
+	.dwcfa	0x07, 92
+	.dwcfa	0x07, 93
+	.dwcfa	0x07, 94
+	.dwcfa	0x07, 95
+	.dwcfa	0x07, 96
+	.dwcfa	0x07, 97
+	.dwcfa	0x07, 98
+	.dwcfa	0x07, 99
+	.dwcfa	0x07, 100
+	.dwcfa	0x07, 101
+	.dwcfa	0x07, 102
+	.dwcfa	0x07, 103
+	.dwcfa	0x07, 104
+	.dwcfa	0x07, 105
+	.dwcfa	0x07, 106
+	.dwcfa	0x07, 107
+	.dwcfa	0x07, 108
+	.dwcfa	0x07, 109
+	.dwcfa	0x07, 110
+	.dwcfa	0x07, 111
+	.dwcfa	0x07, 112
+	.dwcfa	0x07, 113
+	.dwcfa	0x07, 114
+	.dwcfa	0x07, 115
+	.dwcfa	0x07, 116
+	.dwcfa	0x07, 117
+	.dwcfa	0x07, 118
+	.dwcfa	0x07, 119
+	.dwcfa	0x07, 120
+	.dwcfa	0x07, 121
+	.dwcfa	0x07, 122
+	.dwcfa	0x07, 123
+	.dwcfa	0x07, 124
+	.dwcfa	0x07, 125
+	.dwcfa	0x07, 126
 
 ;***************************************************************
 ;* DWARF REGISTER MAP                                          *

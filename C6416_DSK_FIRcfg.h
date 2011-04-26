@@ -25,6 +25,10 @@ extern far TSK_Obj TSK_idle;
 extern far LOG_Obj LOG_system;
 extern far LOG_Obj mylog;
 extern far STS_Obj IDL_busyObj;
+extern far STS_Obj init_array_sts;
+extern far STS_Obj edge_detection_c_sts;
+extern far STS_Obj edge_detection_la_sts;
+extern far STS_Obj overhead_sts;
 extern far void CSL_cfgInit();
 
 #ifdef __cplusplus
